@@ -9,9 +9,9 @@ of the node.
 
 Example:
 
-'''
+```
 Show-Ast .\Show-Ast.psm1
 Show-Ast { echo -InputObject "Name is $name" }.Ast
-'''
+```
 
 If you edit the text in the script view, you can press F5 to refresh the tree view.
