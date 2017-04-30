@@ -10,7 +10,7 @@ of the node.
 Example:
 
 ```
-Show-Ast .\Show-Ast.psm1
+Import-Module .\Show-Ast.psm1
 Show-Ast { echo -InputObject "Name is $name" }.Ast
 ```
 
