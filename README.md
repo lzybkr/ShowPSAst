@@ -10,7 +10,14 @@ of the node.
 Example:
 
 ```
+# Import the module first
 Import-Module .\Show-Ast.psm1
+
+# Show the ast of a script or script module
+Show-Ast $pshome\Modules\Microsoft.PowerShell.Utility\Microsoft.PowerShell.Utility.psm1
+Show-Ast ~\Documents\WindowsPowerShell\profile.ps1
+
+# Show the ast of a script block
 Show-Ast { echo -InputObject "Name is $name" }.Ast
 ```
 
