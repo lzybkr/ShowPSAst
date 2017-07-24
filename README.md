@@ -10,8 +10,9 @@ of the node.
 Example:
 
 ```
-# Import the module first
-Import-Module .\Show-Ast.psm1
+# Install the module first, then import
+Install-Module ShowPSAst
+Import-Module ShowPSAst.psm1
 
 # Show the ast of a script or script module
 Show-Ast $pshome\Modules\Microsoft.PowerShell.Utility\Microsoft.PowerShell.Utility.psm1
