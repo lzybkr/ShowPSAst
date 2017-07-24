@@ -12,7 +12,7 @@ Example:
 ```
 # Install the module first, then import
 Install-Module ShowPSAst
-Import-Module ShowPSAst.psm1
+Import-Module ShowPSAst
 
 # Show the ast of a script or script module
 Show-Ast $pshome\Modules\Microsoft.PowerShell.Utility\Microsoft.PowerShell.Utility.psm1
