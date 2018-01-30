@@ -19,7 +19,7 @@ Show-Ast $pshome\Modules\Microsoft.PowerShell.Utility\Microsoft.PowerShell.Utili
 Show-Ast ~\Documents\WindowsPowerShell\profile.ps1
 
 # Show the ast of a script block
-Show-Ast { echo -InputObject "Name is $name" }.Ast
+Show-Ast { echo -InputObject "Name is $name" }
 ```
 
 If you edit the text in the script view, you can press F5 to refresh the tree view.
