@@ -4,19 +4,15 @@ function Initialize-Form {
     param (
         [Windows.Forms.Form]                  $Form,
         [System.Windows.Forms.SplitContainer] $SplitContainer1,
-        [object]                              $InputObject
+        [object]                              $Ast
     )
 
-    $text = [string]$InputObject
-
-    $inputObjectFilePath = if (Test-Path -LiteralPath $text) {
-        Resolve-Path $text
-    }
-    else {
+    $filePath = if ([string]::IsNullOrWhiteSpace($Ast.Extent.File)) {
         ''
     }
-
-    $filePath = ' - ' + $inputObjectFilePath
+    else {
+        " - {0}" -f $Ast.Extent.File
+    }
 
     $Form.ClientSize = [System.Drawing.Size]::new(1200, 700)
     $Form.Controls.Add($splitContainer1)

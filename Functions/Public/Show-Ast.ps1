@@ -35,7 +35,7 @@ function Show-Ast {
     Initialize-TreeView -Ast $ast -TreeView $treeView -DataGridView $dataGridView -Font $font
 
     try {
-        Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -InputObject $InputObject
+        Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -Ast $ast
 
         $form.ShowDialog() | Out-Null
     }
