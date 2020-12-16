@@ -5,7 +5,8 @@ function Initialize-TreeView {
         [object]                            $Ast,
         [System.Windows.Forms.TreeView]     $TreeView,
         [System.Windows.Forms.DataGridView] $DataGridView,
-        [System.Drawing.Font]               $Font
+        [System.Drawing.Font]               $Font,
+        [string]                            $ExtentDetailLevel
     )
 
     $TreeView.Dock = [System.Windows.Forms.DockStyle]::Fill
@@ -27,5 +28,5 @@ function Initialize-TreeView {
         }
     )
 
-    AddChildNode -Child $Ast -NodeList $TreeView.Nodes
+    AddChildNode -Child $Ast -NodeList $TreeView.Nodes -ExtentDetailLevel $ExtentDetailLevel
 }

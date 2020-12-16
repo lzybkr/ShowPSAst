@@ -7,7 +7,10 @@ function OnTextBoxKeyUp {
         $Sender,
         $KeyEventArg,
         $ScriptView,
-        $TreeView
+        $TreeView,
+        $ExtentDetailLevel,
+        $StartLinenumber,
+        $EndLineNumber
     )
 
     if ($KeyEventArg.KeyCode -eq 'F5' -and $KeyEventArg.Alt -eq $false -and
@@ -31,7 +34,7 @@ function OnTextBoxKeyUp {
         $ScriptView.Text = (Add-LineNumber -Text $ast.Extent.Text)
         # $ScriptView.Text = ($textWithLineNumbers -join "`r`n")
 
-        AddChildNode $Ast $TreeView.Nodes
+        AddChildNode $Ast $TreeView.Nodes -ExtentDetailLevel $ExtentDetailLevel
         $script:BufferIsDirty = $false
         $script:inputObjectStartOffset = 0
     }

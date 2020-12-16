@@ -5,7 +5,9 @@ function Show-Ast {
     param (
         [Parameter()]
         [object] $InputObject,
-        [double] $FontSize = $showPsAstConfig.FontSize
+        [double] $FontSize = $showPsAstConfig.FontSize,
+        [ValidateSet('Normal', 'Detailed')]
+        [string] $ExtentDetailLevel
     )
 
     $ast = Get-Ast -InputObject $InputObject
@@ -26,17 +28,19 @@ function Show-Ast {
 
     Initialize-DataGridView -DataGridView $dataGridView -Font $font
 
-    Initialize-ScriptView -Ast $ast -ScriptView $scriptView $TreeView $treeView -Font $font
+    Initialize-ScriptView -Ast $ast -ScriptView $scriptView $TreeView $treeView `
+        -Font $font -ExtentDetailLevel $ExtentDetailLevel
 
     $script:inputObjectStartOffset = $ast.Extent.StartOffset
     $script:inputObjectStartLineNumber = $ast.Extent.StartLineNumber
     $script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
 
     Initialize-TreeView -Ast $ast -TreeView $treeView -DataGridView $dataGridView `
-        -Font $font
+        -Font $font -ExtentDetailLevel $ExtentDetailLevel
 
     try {
-        Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -Ast $ast
+        Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -Ast $ast `
+            -ExtentDetailLevel $ExtentDetailLevel
 
         $form.ShowDialog() | Out-Null
     }
