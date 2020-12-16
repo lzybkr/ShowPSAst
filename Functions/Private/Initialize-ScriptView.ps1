@@ -16,7 +16,8 @@ function Initialize-ScriptView {
     $ScriptView.Multiline = $true
     $ScriptView.ScrollBars = 'Both'
     $ScriptView.TabIndex = 2
-    $ScriptView.Text = (Add-LineNumber -Text $Ast.Extent.Text)
+    $ScriptView.Text = (Add-LineNumber -Text $Ast.Extent.Text -StartLineNumber `
+            $Ast.Extent.StartLineNumber -EndLineNumber $Ast.Extent.EndLineNumber)
     $ScriptView.WordWrap = $false
     $ScriptView.Anchor = ([System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left)
     $ScriptView.Dock = [System.Windows.Forms.DockStyle]::Fill

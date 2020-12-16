@@ -36,7 +36,7 @@ function Invoke-TreeViewAfterSelect {
     if (!$script:BufferIsDirty) {
         $startOffset = $selectedObject.Extent.StartOffset - $script:inputObjectStartOffset
         $endOffset = $selectedObject.Extent.EndOffset - $script:inputObjectStartOffset
-        $maxLength = ($scriptView.Text -split "`r`n").Count.ToString().Length + 2
+        $maxLength = $script:inputObjectEndLineNumber.ToString().Length + 2
         $numberOfLines = ($selectedObject.Extent.EndLineNumber - $selectedObject.Extent.StartLineNumber) + 1
         $selectionLength = if ($numberOfLines -eq 1) {
             $endOffset - $startOffset
@@ -45,7 +45,7 @@ function Invoke-TreeViewAfterSelect {
             ($endOffset - $startOffset) + ($maxLength * ($numberOfLines - 1))
         }
 
-        $scriptView.SelectionStart = $startOffset + ($selectedObject.Extent.StartLineNumber * $maxLength)
+        $scriptView.SelectionStart = $startOffset + ((($selectedObject.Extent.StartLineNumber - $script:inputObjectStartLineNumber) + 1) * $maxLength)
         $scriptView.SelectionLength = $selectionLength
         $scriptView.ScrollToCaret()
     }

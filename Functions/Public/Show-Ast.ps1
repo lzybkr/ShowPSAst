@@ -29,6 +29,8 @@ function Show-Ast {
     Initialize-ScriptView -Ast $ast -ScriptView $scriptView $TreeView $treeView -Font $font
 
     $script:inputObjectStartOffset = $ast.Extent.StartOffset
+    $script:inputObjectStartLineNumber = $ast.Extent.StartLineNumber
+    $script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
 
     Initialize-TreeView -Ast $ast -TreeView $treeView -DataGridView $dataGridView -Font $font
 
