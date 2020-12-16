@@ -8,7 +8,15 @@ function Initialize-Form {
     )
 
     $text = [string]$InputObject
-    $filePath = ' - ' + ((Test-Path -LiteralPath $text) ? (Resolve-Path $text) : '')
+
+    $inputObjectFilePath = if (Test-Path -LiteralPath $text) {
+        Resolve-Path $text
+    }
+    else {
+        ''
+    }
+
+    $filePath = ' - ' + $inputObjectFilePath
 
     $Form.ClientSize = [System.Drawing.Size]::new(1200, 700)
     $Form.Controls.Add($splitContainer1)
