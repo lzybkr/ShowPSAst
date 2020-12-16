@@ -5,7 +5,7 @@ function Show-Ast {
     param (
         [Parameter()]
         [object] $InputObject,
-        [double] $FontSize = 8.0
+        [double] $FontSize = $showPsAstConfig.FontSize
     )
 
     $ast = Get-Ast -InputObject $InputObject
@@ -32,7 +32,8 @@ function Show-Ast {
     $script:inputObjectStartLineNumber = $ast.Extent.StartLineNumber
     $script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
 
-    Initialize-TreeView -Ast $ast -TreeView $treeView -DataGridView $dataGridView -Font $font
+    Initialize-TreeView -Ast $ast -TreeView $treeView -DataGridView $dataGridView `
+        -Font $font
 
     try {
         Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -Ast $ast
