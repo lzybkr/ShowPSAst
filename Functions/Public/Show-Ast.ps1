@@ -7,10 +7,14 @@ function Show-Ast {
         [object] $InputObject,
         [double] $FontSize = $showPsAstConfig.FontSize,
         [ValidateSet('Normal', 'Detailed')]
-        [string] $ExtentDetailLevel
+        [string] $ExtentDetailLevel = $showPsAstConfig.ExtentDetailLevel
     )
 
     $ast = Get-Ast -InputObject $InputObject
+
+    $script:inputObjectStartOffset = $ast.Extent.StartOffset
+    $script:inputObjectStartLineNumber = $ast.Extent.StartLineNumber
+    $script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
 
     $font = [System.Drawing.Font]::new('Consolas', $FontSize)
     $form = [Windows.Forms.Form]::new()
@@ -30,10 +34,6 @@ function Show-Ast {
 
     Initialize-ScriptView -Ast $ast -ScriptView $scriptView $TreeView $treeView `
         -Font $font -ExtentDetailLevel $ExtentDetailLevel
-
-    $script:inputObjectStartOffset = $ast.Extent.StartOffset
-    $script:inputObjectStartLineNumber = $ast.Extent.StartLineNumber
-    $script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
 
     Initialize-TreeView -Ast $ast -TreeView $treeView -DataGridView $dataGridView `
         -Font $font -ExtentDetailLevel $ExtentDetailLevel
