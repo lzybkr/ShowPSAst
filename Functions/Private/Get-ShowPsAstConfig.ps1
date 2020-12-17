@@ -1,6 +1,12 @@
 Set-StrictMode -Version Latest
 
 function Get-ShowPsAstConfig {
+    # Default configuration that can be overridden by a config.txt file
+    $config = [pscustomobject]@{
+        FontSize          = 12
+        ExtentDetailLevel = 'Normal'
+    }
+
     $configFilePath = "$PSScriptRoot\..\..\config.txt"
 
     if (-not (Test-Path -Path $configFilePath)) {
@@ -8,11 +14,6 @@ function Get-ShowPsAstConfig {
     }
 
     $configFromFile = Get-Content -Path $configFilePath -Raw | ConvertFrom-StringData
-
-    $config = [pscustomobject]@{
-        FontSize          = 12
-        ExtentDetailLevel = 'Normal'
-    }
 
     foreach ($field in $config.psobject.Properties.Name) {
         if ($configFromFile.ContainsKey($field)) {
