@@ -2,11 +2,14 @@ Set-StrictMode -Version Latest
 
 function Initialize-TreeView {
     param (
-        [object]                            $Ast,
-        [System.Windows.Forms.TreeView]     $TreeView,
-        [System.Windows.Forms.DataGridView] $DataGridView,
-        [System.Drawing.Font]               $Font,
-        [string]                            $ExtentDetailLevel
+        [System.Management.Automation.Language.Ast] $Ast,
+        [System.Windows.Forms.TreeView]             $TreeView,
+        [System.Windows.Forms.DataGridView]         $DataGridView,
+        [System.Drawing.Font]                       $Font,
+        [string]                                    $ExtentDetailLevel,
+        [bool]                                      $BufferIsDirty,
+        [int]                                       $OriginalStartLinenumber,
+        [int]                                       $OriginalStartOffset
     )
 
     $TreeView.Dock = [System.Windows.Forms.DockStyle]::Fill
@@ -24,9 +27,20 @@ function Initialize-TreeView {
                 [object] $Sender,
                 [System.Windows.Forms.TreeViewEventArgs] $E
             )
-            Invoke-TreeViewAfterSelect -Sender $Sender -E $E -DataGridView $DataGridView
+            Invoke-TreeViewAfterSelect -Sender $Sender -E $E `
+                -DataGridView $DataGridView `
+                -StartOffset $script:inputObjectStartOffset `
+                -StartLinenumber $script:inputObjectStartLineNumber `
+                -OriginalEndLineNumber $script:inputObjectOriginalEndLineNumber `
+                -BufferIsDirty $script:BufferIsDirty
         }
     )
 
-    AddChildNode -Child $Ast -NodeList $TreeView.Nodes -ExtentDetailLevel $ExtentDetailLevel
+    AddChildNode `
+        -Child $Ast `
+        -NodeList $TreeView.Nodes `
+        -ExtentDetailLevel $ExtentDetailLevel `
+        -OriginalStartLineNumber $OriginalStartLinenumber `
+        -OriginalStartOffset $OriginalStartOffset `
+        -BufferIsDirty $BufferIsDirty
 }

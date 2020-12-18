@@ -2,9 +2,13 @@ Set-StrictMode -Version Latest
 
 function Invoke-TreeViewAfterSelect {
     param(
-        [object]                                 $Sender,
+        [System.Windows.Forms.TreeView]          $Sender,
         [System.Windows.Forms.TreeViewEventArgs] $E,
-        [System.Windows.Forms.DataGridView]      $DataGridView
+        [System.Windows.Forms.DataGridView]      $DataGridView,
+        [int]                                    $StartOffset,
+        [int]                                    $StartLineNumber,
+        [int]                                    $OriginalEndLineNumber,
+        [bool]                                   $BufferIsDirty
     )
 
     $DataGridView.Rows.Clear()
@@ -33,19 +37,19 @@ function Invoke-TreeViewAfterSelect {
     }
 
     # If the text box has changed, skip doing anything with it until we've updated the tree view.
-    if (!$script:BufferIsDirty) {
-        $startOffset = $selectedObject.Extent.StartOffset - $script:inputObjectStartOffset
-        $endOffset = $selectedObject.Extent.EndOffset - $script:inputObjectStartOffset
-        $maxLength = $script:inputObjectEndLineNumber.ToString().Length + 2
+    if (!$BufferIsDirty) {
+        $selectedStartOffset = $selectedObject.Extent.StartOffset - $StartOffset
+        $endOffset = $selectedObject.Extent.EndOffset - $StartOffset
+        $maxLength = $OriginalEndLineNumber.ToString().Length + 2
         $numberOfLines = ($selectedObject.Extent.EndLineNumber - $selectedObject.Extent.StartLineNumber) + 1
         $selectionLength = if ($numberOfLines -eq 1) {
-            $endOffset - $startOffset
+            $endOffset - $selectedStartOffset
         }
         else {
-            ($endOffset - $startOffset) + ($maxLength * ($numberOfLines - 1))
+            ($endOffset - $selectedStartOffset) + ($maxLength * ($numberOfLines - 1))
         }
 
-        $scriptView.SelectionStart = $startOffset + ((($selectedObject.Extent.StartLineNumber - $script:inputObjectStartLineNumber) + 1) * $maxLength)
+        $scriptView.SelectionStart = $selectedStartOffset + ((($selectedObject.Extent.StartLineNumber - $StartLineNumber) + 1) * $maxLength)
         $scriptView.SelectionLength = $selectionLength
         $scriptView.ScrollToCaret()
     }

@@ -3,14 +3,14 @@ Set-StrictMode -Version Latest
 function Add-LineNumber {
     param (
         [string] $Text,
-        [int]    $StartLineNumber,
-        [int]    $EndLineNumber
+        [int]    $OriginalStartLineNumber,
+        [int]    $OriginalEndLineNumber
     )
 
     $textAsArray = $Text.Clone() -split [System.Environment]::NewLine
-    $maxLength = $EndLineNumber.ToString().Length
+    $maxLength = $OriginalEndLineNumber.ToString().Length
     for ($i = 0; $i -lt $textAsArray.Count; $i++) {
-        $textAsArray[$i] = "{0,$maxLength}: {1}" -f (($i + $StartLineNumber)), $textAsArray[$i]
+        $textAsArray[$i] = "{0,$maxLength}: {1}" -f (($i + $OriginalStartLineNumber)), $textAsArray[$i]
     }
 
     ($textAsArray -join [System.Environment]::NewLine)

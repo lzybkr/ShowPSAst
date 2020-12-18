@@ -2,9 +2,9 @@ Set-StrictMode -Version Latest
 
 function Initialize-Form {
     param (
-        [Windows.Forms.Form]                  $Form,
-        [System.Windows.Forms.SplitContainer] $SplitContainer1,
-        [object]                              $Ast
+        [Windows.Forms.Form]                        $Form,
+        [System.Windows.Forms.SplitContainer]       $SplitContainer1,
+        [System.Management.Automation.Language.Ast] $Ast
     )
 
     $filePath = if ([string]::IsNullOrWhiteSpace($Ast.Extent.File)) {

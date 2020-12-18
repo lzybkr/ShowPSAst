@@ -2,11 +2,13 @@ Set-StrictMode -Version Latest
 
 function Initialize-ScriptView {
     param (
-        [object]                        $Ast,
-        [System.Windows.Forms.TextBox]  $ScriptView,
-        [System.Windows.Forms.TreeView] $TreeView,
-        [System.Drawing.Font]           $Font,
-        [string]                        $ExtentDetailLevel
+        [System.Management.Automation.Language.Ast] $Ast,
+        [System.Windows.Forms.TextBox]              $ScriptView,
+        [System.Windows.Forms.TreeView]             $TreeView,
+        [System.Drawing.Font]                       $Font,
+        [string]                                    $ExtentDetailLevel,
+        [int]                                       $OriginalStartLineNumber,
+        [int]                                       $OriginalEndLineNumber
     )
 
     # The script view is a text box that displays the text of the script.
@@ -17,8 +19,9 @@ function Initialize-ScriptView {
     $ScriptView.Multiline = $true
     $ScriptView.ScrollBars = 'Both'
     $ScriptView.TabIndex = 2
-    $ScriptView.Text = (Add-LineNumber -Text $Ast.Extent.Text -StartLineNumber `
-            $Ast.Extent.StartLineNumber -EndLineNumber $Ast.Extent.EndLineNumber)
+    $ScriptView.Text = (Add-LineNumber -Text $Ast.Extent.Text `
+            -OriginalStartLineNumber $OriginalStartLineNumber `
+            -OriginalEndLineNumber $OriginalEndLineNumber)
     $ScriptView.WordWrap = $false
     $ScriptView.Anchor = ([System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left)
     $ScriptView.Dock = [System.Windows.Forms.DockStyle]::Fill
@@ -30,9 +33,13 @@ function Initialize-ScriptView {
                 $Sender,
                 $KeyEventArg
             )
-            OnTextBoxKeyUp -Sender $Sender -KeyEventArg $KeyEventArg -scriptView `
-                $ScriptView -TreeView $TreeView -ExtentDetailLevel $ExtentDetailLevel
+            OnTextBoxKeyUp `
+                -Sender $Sender `
+                -KeyEventArg $KeyEventArg `
+                -TreeView $TreeView `
+                -ExtentDetailLevel $ExtentDetailLevel `
+                -OriginalStartLineNumber $script:inputObjectOriginalStartLineNumber `
+                -OriginalEndLineNumber $script:inputObjectOriginalEndLineNumber `
+                -OriginalStartOffset $script:inputObjectOriginalStartOffset
         })
-
-    $script:BufferIsDirty = $false
 }

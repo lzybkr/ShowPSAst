@@ -12,9 +12,13 @@ function Show-Ast {
 
     $ast = Get-Ast -InputObject $InputObject
 
-    $script:inputObjectStartOffset = $ast.Extent.StartOffset
-    $script:inputObjectStartLineNumber = $ast.Extent.StartLineNumber
-    $script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
+    [int]$script:inputObjectStartOffset = $ast.Extent.StartOffset
+    [int]$script:inputObjectOriginalStartOffset = $ast.Extent.StartOffset
+    [int]$script:inputObjectOriginalStartLineNumber = $ast.Extent.StartLineNumber
+    [int]$script:inputObjectStartLineNumber = $ast.Extent.StartLineNumber
+    [int]$script:inputObjectOriginalEndLineNumber = $ast.Extent.EndLineNumber
+    [int]$script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
+    $script:BufferIsDirty = $false
 
     $font = [System.Drawing.Font]::new('Consolas', $FontSize)
     $form = [Windows.Forms.Form]::new()
@@ -33,14 +37,22 @@ function Show-Ast {
     Initialize-DataGridView -DataGridView $dataGridView -Font $font
 
     Initialize-ScriptView -Ast $ast -ScriptView $scriptView $TreeView $treeView `
-        -Font $font -ExtentDetailLevel $ExtentDetailLevel
+        -Font $font -ExtentDetailLevel $ExtentDetailLevel `
+        -OriginalStartLineNumber $ast.Extent.StartLineNumber `
+        -OriginalEndLineNumber $ast.Extent.EndLineNumber
 
-    Initialize-TreeView -Ast $ast -TreeView $treeView -DataGridView $dataGridView `
-        -Font $font -ExtentDetailLevel $ExtentDetailLevel
+    Initialize-TreeView `
+        -Ast $ast `
+        -TreeView $treeView `
+        -DataGridView $dataGridView `
+        -Font $font `
+        -ExtentDetailLevel $ExtentDetailLevel `
+        -BufferIsDirty $script:BufferIsDirty `
+        -OriginalStartLineNumber $ast.Extent.StartLineNumber `
+        -OriginalStartOffset $ast.Extent.StartOffset
 
     try {
-        Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -Ast $ast `
-            -ExtentDetailLevel $ExtentDetailLevel
+        Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -Ast $ast
 
         $form.ShowDialog() | Out-Null
     }
