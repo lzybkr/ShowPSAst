@@ -1,0 +1,6 @@
+FontSize = 12
+
+# Valid values are: 
+# Normal   = line numbers only
+# Detailed = line numbers, column numbers and offset numbers
+ExtentDetailLevel = Normal
