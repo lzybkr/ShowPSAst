@@ -1,5 +1,70 @@
 Set-StrictMode -Version Latest
 
+<#
+.SYNOPSIS
+This module helps visualize the PowerShell AST with a graphical view.
+
+.DESCRIPTION
+This module helps visualize the PowerShell AST with a graphical view.
+
+The AST is fully expanded in tree view, selecting a node in the tree view will
+display the corresponding text in the script and the properties of the node.
+
+If you edit the text in the script view, you can press F5 to refresh the
+tree view.
+
+There are default values for FontSize and ExtentDetailLevel. The defaults can be
+overridden.
+
+Command line, one time override:
+Show-Ast 'c:\Data\PowerShell\sample.ps1' -FontSize 10 -ExtentDetailLevel Detailed
+
+Configuration file, permanent override:
+A file named config.txt in the root of the module. The contents should look like
+this:
+
+FontSize = 12
+
+# Valid values are:
+# Normal   = line numbers only
+# Detailed = line numbers, column numbers and offset numbers
+ExtentDetailLevel = Normal
+
+
+.PARAMETER InputObject
+Either a scriptblock or a path to a file.
+
+.PARAMETER FontSize
+The font size for text. The default is 12 (point).
+
+.PARAMETER ExtentDetailLevel
+The level of details displayed for the current AST Extent. This is displayed
+in square brackets in the tree view. The default is Normal.
+
+Normal = Line numbers
+Detailed = Line numbers, column numbers and offset numbers
+
+.EXAMPLE
+Show-Ast -InputObject c:\Data\PowerShell\sample.ps1
+
+Show the AST of a script.
+
+.EXAMPLE
+$param @{
+    InputObject = 'c:\Data\PowerShell\sample.ps1'
+    FontSize = 10
+    ExtentDetailLevel = 'Detailed'
+}
+Show-Ast @params
+
+Show the AST of a script. Customise the font size and extent detail level.
+
+
+.EXAMPLE
+Show-Ast { echo -InputObject "Name is $name" }
+
+Show the AST of a script block.
+#>
 function Show-Ast {
     [CmdletBinding()]
     param (
