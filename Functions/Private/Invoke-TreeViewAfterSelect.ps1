@@ -2,8 +2,8 @@ Set-StrictMode -Version Latest
 
 function Invoke-TreeViewAfterSelect {
     param(
-        [System.Windows.Forms.TreeView]          $Sender,
-        [System.Windows.Forms.TreeViewEventArgs] $E,
+        [System.Windows.Forms.TreeView]          $TreeView,
+        [System.Windows.Forms.TreeViewEventArgs] $TreeViewEventArg,
         [System.Windows.Forms.DataGridView]      $DataGridView,
         [System.Windows.Forms.TextBox]           $ScriptView,
         [int]                                    $StartOffset,
@@ -14,7 +14,7 @@ function Invoke-TreeViewAfterSelect {
     )
 
     $DataGridView.Rows.Clear()
-    $selectedObject = $E.Node.Tag
+    $selectedObject = $TreeViewEventArg.Node.Tag
 
     foreach ($property in $selectedObject.PSObject.Properties) {
         $typeName = [Microsoft.PowerShell.ToStringCodeMethods]::Type([type]$property.TypeNameOfValue)

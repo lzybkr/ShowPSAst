@@ -4,7 +4,7 @@ Set-StrictMode -Version Latest
 # when asked (by pressing F5).
 function OnTextBoxKeyUp {
     param(
-        [System.Windows.Forms.TextBox]  $Sender,
+        [System.Windows.Forms.TextBox]  $TextBox,
         [System.EventArgs]              $KeyEventArg,
         [System.Windows.Forms.TreeView] $TreeView,
         [string]                        $ExtentDetailLevel,
@@ -21,7 +21,7 @@ function OnTextBoxKeyUp {
         $script:TextBoxRefreshed = $true
 
         # Remove line numbers
-        $textNoLineNumbers = ($Sender.Text -split "`r`n").foreach( {
+        $textNoLineNumbers = ($TextBox.Text -split "`r`n").foreach( {
                 $_ -replace '^\s*[0-9]+: (.*)', '$1'
             }) -join "`r`n"
 
@@ -31,7 +31,7 @@ function OnTextBoxKeyUp {
         $TreeView.Nodes.Clear()
 
         # Add line numbers
-        $Sender.Text = (Add-LineNumber -Text $ast.Extent.Text `
+        $TextBox.Text = (Add-LineNumber -Text $ast.Extent.Text `
                 -OriginalStartLineNumber $OriginalStartLinenumber `
                 -OriginalEndLineNumber $OriginalEndLineNumber)
 

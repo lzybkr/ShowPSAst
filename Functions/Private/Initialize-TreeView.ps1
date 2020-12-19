@@ -25,10 +25,11 @@ function Initialize-TreeView {
     $TreeView.Add_AfterSelect(
         {
             param (
-                [object] $Sender,
-                [System.Windows.Forms.TreeViewEventArgs] $E
+                [object] $SenderTreeView,
+                [System.Windows.Forms.TreeViewEventArgs] $TreeViewEventArg
             )
-            Invoke-TreeViewAfterSelect -Sender $Sender -E $E `
+            Invoke-TreeViewAfterSelect -TreeView $SenderTreeView `
+                -TreeViewEventArg $TreeViewEventArg `
                 -DataGridView $DataGridView `
                 -ScriptView $ScriptView `
                 -StartOffset $script:inputObjectStartOffset `

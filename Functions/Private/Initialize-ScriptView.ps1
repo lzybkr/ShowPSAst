@@ -30,11 +30,11 @@ function Initialize-ScriptView {
     $ScriptView.Add_TextChanged( { $script:BufferIsDirty = $true })
     $ScriptView.Add_KeyUp( {
             param (
-                $Sender,
+                $SenderTextBox,
                 $KeyEventArg
             )
             OnTextBoxKeyUp `
-                -Sender $Sender `
+                -TextBox $SenderTextBox `
                 -KeyEventArg $KeyEventArg `
                 -TreeView $TreeView `
                 -ExtentDetailLevel $ExtentDetailLevel `
