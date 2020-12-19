@@ -9,7 +9,8 @@ function Invoke-TreeViewAfterSelect {
         [int]                                    $StartOffset,
         [int]                                    $StartLineNumber,
         [int]                                    $OriginalStartLineNumber,
-        [bool]                                   $BufferIsDirty
+        [bool]                                   $BufferIsDirty,
+        [bool]                                   $TextBoxRefreshed
     )
 
     $DataGridView.Rows.Clear()
@@ -31,8 +32,18 @@ function Invoke-TreeViewAfterSelect {
             else {
                 Split-Path -Leaf $value.File
             }
+
+            if ($TextBoxRefreshed) {
+                $calculatedStartLineNumber =  ($value.StartLineNumber + $OriginalStartLineNumber) - 1
+                $calculatedEndLineNumber =  ($value.EndLineNumber + $OriginalStartLineNumber) - 1
+            }
+            else {
+                $calculatedStartLineNumber =  $value.StartLineNumber
+                $calculatedEndLineNumber =  $value.EndLineNumber
+            }
+
             $value = "{0} ({1},{2})-({3},{4})" -f
-            $file, $value.StartLineNumber, $value.StartColumnNumber, $value.EndLineNumber, $value.EndColumnNumber
+            $file, $calculatedStartLineNumber, $value.StartColumnNumber, $calculatedEndLineNumber, $value.EndColumnNumber
         }
         $DataGridView.Rows.Add($property.Name, $value, $typeName)
     }

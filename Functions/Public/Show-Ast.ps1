@@ -19,6 +19,7 @@ function Show-Ast {
     [int]$script:inputObjectOriginalEndLineNumber = $ast.Extent.EndLineNumber
     [int]$script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
     $script:BufferIsDirty = $false
+    $script:TextBoxRefreshed = $false
 
     $font = [System.Drawing.Font]::new('Consolas', $FontSize)
     $form = [Windows.Forms.Form]::new()

@@ -18,6 +18,7 @@ function OnTextBoxKeyUp {
 
         $KeyEventArg.Handled = $true
         $script:BufferIsDirty = $true
+        $script:TextBoxRefreshed = $true
 
         # Remove line numbers
         $textNoLineNumbers = ($Sender.Text -split "`r`n").foreach( {

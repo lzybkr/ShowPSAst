@@ -35,7 +35,8 @@ function Initialize-TreeView {
                 -StartLinenumber $script:inputObjectStartLineNumber `
                 -OriginalStartLineNumber $script:inputObjectOriginalStartLineNumber `
                 -OriginalEndLineNumber $script:inputObjectOriginalEndLineNumber `
-                -BufferIsDirty $script:BufferIsDirty
+                -BufferIsDirty $script:BufferIsDirty `
+                -TextBoxRefreshed $script:TextBoxRefreshed
         }
     )
 
