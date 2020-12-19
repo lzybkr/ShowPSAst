@@ -5,9 +5,10 @@ function Invoke-TreeViewAfterSelect {
         [System.Windows.Forms.TreeView]          $Sender,
         [System.Windows.Forms.TreeViewEventArgs] $E,
         [System.Windows.Forms.DataGridView]      $DataGridView,
+        [System.Windows.Forms.TextBox]           $ScriptView,
         [int]                                    $StartOffset,
         [int]                                    $StartLineNumber,
-        [int]                                    $OriginalEndLineNumber,
+        [int]                                    $OriginalStartLineNumber,
         [bool]                                   $BufferIsDirty
     )
 
@@ -40,7 +41,7 @@ function Invoke-TreeViewAfterSelect {
     if (!$BufferIsDirty) {
         $selectedStartOffset = $selectedObject.Extent.StartOffset - $StartOffset
         $endOffset = $selectedObject.Extent.EndOffset - $StartOffset
-        $maxLength = $OriginalEndLineNumber.ToString().Length + 2
+        $maxLength = (Get-LineNumberWidth -TextArray $ScriptView.Lines -OriginalStartLineNumber $OriginalStartLineNumber) + 2
         $numberOfLines = ($selectedObject.Extent.EndLineNumber - $selectedObject.Extent.StartLineNumber) + 1
         $selectionLength = if ($numberOfLines -eq 1) {
             $endOffset - $selectedStartOffset

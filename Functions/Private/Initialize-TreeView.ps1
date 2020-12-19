@@ -5,6 +5,7 @@ function Initialize-TreeView {
         [System.Management.Automation.Language.Ast] $Ast,
         [System.Windows.Forms.TreeView]             $TreeView,
         [System.Windows.Forms.DataGridView]         $DataGridView,
+        [System.Windows.Forms.TextBox]              $ScriptView,
         [System.Drawing.Font]                       $Font,
         [string]                                    $ExtentDetailLevel,
         [bool]                                      $BufferIsDirty,
@@ -29,8 +30,10 @@ function Initialize-TreeView {
             )
             Invoke-TreeViewAfterSelect -Sender $Sender -E $E `
                 -DataGridView $DataGridView `
+                -ScriptView $ScriptView `
                 -StartOffset $script:inputObjectStartOffset `
                 -StartLinenumber $script:inputObjectStartLineNumber `
+                -OriginalStartLineNumber $script:inputObjectOriginalStartLineNumber `
                 -OriginalEndLineNumber $script:inputObjectOriginalEndLineNumber `
                 -BufferIsDirty $script:BufferIsDirty
         }

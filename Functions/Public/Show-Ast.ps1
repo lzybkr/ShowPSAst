@@ -45,6 +45,7 @@ function Show-Ast {
         -Ast $ast `
         -TreeView $treeView `
         -DataGridView $dataGridView `
+        -ScriptView $scriptView `
         -Font $font `
         -ExtentDetailLevel $ExtentDetailLevel `
         -BufferIsDirty $script:BufferIsDirty `
