@@ -10,6 +10,8 @@ function PopulateNode {
         [bool]                                      $BufferIsDirty
     )
 
+    $astCollection = [System.Collections.ArrayList]::new()
+
     foreach ($child in $Ast.PSObject.Properties) {
         # Skip the Parent node, it's not useful here
         if ($child.Name -eq 'Parent') {
@@ -24,11 +26,7 @@ function PopulateNode {
 
         # Recursively add only Ast nodes.
         if ($childObject -is [System.Management.Automation.Language.Ast]) {
-            AddChildNode -Child $childObject -NodeList $NodeList `
-                -ExtentDetailLevel $ExtentDetailLevel `
-                -OriginalStartLineNumber $OriginalStartLineNumber `
-                -OriginalStartOffset $OriginalStartOffset `
-                -BufferIsDirty $BufferIsDirty
+            $astCollection.Add($childObject) | Out-Null
             continue
         }
 
@@ -37,11 +35,7 @@ function PopulateNode {
         $collection = $childObject -as [System.Management.Automation.Language.Ast[]]
         if ($collection -ne $null) {
             for ($i = 0; $i -lt $collection.Length; $i++) {
-                AddChildNode -Child ($collection[$i]) -NodeList $NodeList `
-                    -ExtentDetailLevel $ExtentDetailLevel `
-                    -OriginalStartLineNumber $OriginalStartLineNumber `
-                    -OriginalStartOffset $OriginalStartOffset `
-                    -BufferIsDirty $BufferIsDirty
+                $astCollection.Add($collection[$i]) | Out-Null
             }
             continue
         }
@@ -50,18 +44,25 @@ function PopulateNode {
         # of tuples of Ast.  Both items in the tuple are an Ast, so we want to recurse on both.
         if ($childObject.GetType().FullName -match 'ReadOnlyCollection.*Tuple`2.*Ast.*Ast') {
             for ($i = 0; $i -lt $childObject.Count; $i++) {
-                AddChildNode -Child ($childObject[$i].Item1) -NodeList $NodeList `
-                    -ExtentDetailLevel $ExtentDetailLevel `
-                    -OriginalStartLineNumber $OriginalStartLineNumber `
-                    -OriginalStartOffset $OriginalStartOffset `
-                    -BufferIsDirty $BufferIsDirty
-                AddChildNode -Child ($childObject[$i].Item2) -NodeList $NodeList `
-                    -ExtentDetailLevel $ExtentDetailLevel `
-                    -OriginalStartLineNumber $OriginalStartLineNumber `
-                    -OriginalStartOffset $OriginalStartOffset `
-                    -BufferIsDirty $BufferIsDirty
+                $astCollection.Add($childObject[$i].Item1) | Out-Null
+                $astCollection.Add($childObject[$i].Item2) | Out-Null
             }
             continue
         }
     }
+
+    # Without sorting the AST items can be in the wrong order. The result is
+    # the cursor in the textbox jumping back and forth as the user scrolls
+    # through the treeview.
+    $astCollection |
+        Sort-Object -Property @{Expression = {$_.Extent.StartLineNumber}},
+        @{Expression = {$_.Extent.StartColumnNumber}},
+        @{Expression = {$_.Extent.EndOffset}} |
+        ForEach-Object -Process {
+            AddChildNode -Child $_ -NodeList $NodeList `
+                -ExtentDetailLevel $ExtentDetailLevel `
+                -OriginalStartLineNumber $OriginalStartLineNumber `
+                -OriginalStartOffset $OriginalStartOffset `
+                -BufferIsDirty $BufferIsDirty
+        }
 }
