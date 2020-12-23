@@ -1,7 +1,5 @@
 Set-StrictMode -Version Latest
 
-# A function when the text box has focus - so we can refresh the Ast
-# when asked (by pressing F5).
 function OnTextBoxKeyUp {
     param(
         [System.Windows.Forms.TextBox]  $TextBox,
@@ -11,8 +9,17 @@ function OnTextBoxKeyUp {
         [int]                           $OriginalStartLinenumber,
         [int]                           $OriginalEndLineNumber,
         [int]                           $OriginalStartOffset
-    )1
+    )
 
+    function GetNode([System.Windows.Forms.TreeNodeCollection] $nodes) {
+        foreach ($n in $nodes) {
+            $n
+            GetNode($n.Nodes)
+        }
+    }
+
+    # A function when the text box has focus - so we can refresh the Ast
+    # when asked (by pressing F5).
     if ($KeyEventArg.KeyCode -eq 'F5' -and $KeyEventArg.Alt -eq $false -and
         $KeyEventArg.Control -eq $false -and $KeyEventArg.Shift -eq $false) {
 
@@ -45,5 +52,24 @@ function OnTextBoxKeyUp {
 
         $script:BufferIsDirty = $false
         $script:inputObjectStartOffset = 0
+    }
+
+    # Find/highlight line in treeview
+    if ($KeyEventArg.KeyCode -eq 'F3' -and $KeyEventArg.Alt -eq $false -and
+        $KeyEventArg.Control -eq $false -and $KeyEventArg.Shift -eq $false) {
+
+        $KeyEventArg.Handled = $true
+
+        $nodes = GetNode($TreeView.Nodes)
+
+        $selectionStartLineNumber = $TextBox.GetLineFromCharIndex($TextBox.SelectionStart)
+        $selectionLineNumber = ($OriginalStartLinenumber + $selectionStartLineNumber) #-1
+
+        $nodes.Where( {$_.Text -like "*[[]$selectionLineNumber,*"}) |
+            Select-Object -First 1 | ForEach-Object -Process {
+                $TreeView.SelectedNode = $_
+                $_.EnsureVisible()
+                $TreeView.Focus()
+            }
     }
 }

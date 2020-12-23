@@ -13,6 +13,9 @@ display the corresponding text in the script and the properties of the node.
 If you edit the text in the script view, you can press F5 to refresh the
 tree view.
 
+When the cursor is in the script view, if F3 is pressessed, the related item in
+the tree panel will be highlighted.
+
 There are default values for FontSize and ExtentDetailLevel. The defaults can be
 overridden.
 
