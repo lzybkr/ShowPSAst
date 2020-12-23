@@ -4,14 +4,14 @@ function Initialize-Form {
     param (
         [Windows.Forms.Form]                        $Form,
         [System.Windows.Forms.SplitContainer]       $SplitContainer1,
-        [System.Management.Automation.Language.Ast] $Ast
+        [string]                                    $File
     )
 
-    $filePath = if ([string]::IsNullOrWhiteSpace($Ast.Extent.File)) {
+    $filePath = if ([string]::IsNullOrWhiteSpace($File)) {
         ''
     }
     else {
-        " - {0}" -f $Ast.Extent.File
+        " - {0}" -f $File
     }
 
     $Form.ClientSize = [System.Drawing.Size]::new(1200, 700)

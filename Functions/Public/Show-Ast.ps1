@@ -119,7 +119,7 @@ function Show-Ast {
         -OriginalStartOffset $ast.Extent.StartOffset
 
     try {
-        Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -Ast $ast
+        Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -File $ast.Extent.File
 
         $form.ShowDialog() | Out-Null
     }
