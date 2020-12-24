@@ -13,9 +13,6 @@ display the corresponding text in the script and the properties of the node.
 If you edit the text in the script view, you can press F5 to refresh the
 tree view.
 
-When the cursor is in the script view, if F3 is pressessed, the related item in
-the tree panel will be highlighted.
-
 There are default values for FontSize and ExtentDetailLevel. The defaults can be
 overridden.
 
@@ -80,53 +77,116 @@ function Show-Ast {
 
     $ast = Get-Ast -InputObject $InputObject
 
-    [int]$script:inputObjectStartOffset = $ast.Extent.StartOffset
-    [int]$script:inputObjectOriginalStartOffset = $ast.Extent.StartOffset
-    [int]$script:inputObjectOriginalStartLineNumber = $ast.Extent.StartLineNumber
-    [int]$script:inputObjectStartLineNumber = $ast.Extent.StartLineNumber
-    [int]$script:inputObjectOriginalEndLineNumber = $ast.Extent.EndLineNumber
-    [int]$script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
-    $script:BufferIsDirty = $false
-    $script:TextBoxRefreshed = $false
+    $paramList = @(
+        $ast.Extent.Text,
+        $ast.Extent.File,
+        $ast.Extent.StartLineNumber,
+        $ast.Extent.EndLineNumber,
+        $ast.Extent.StartOffset,
+        $FontSize,
+        $ExtentDetailLevel,
+        (Split-Path -Path (Get-PSCallStack)[0].ScriptName -Parent)
+    )
 
-    $font = [System.Drawing.Font]::new('Consolas', $FontSize)
-    $form = [Windows.Forms.Form]::new()
-    $splitContainer1 = [System.Windows.Forms.SplitContainer]::new()
-    $dataGridView = [Windows.Forms.DataGridView]::new()
-    $treeView = [System.Windows.Forms.TreeView]::new()
-    $splitContainer2 = [System.Windows.Forms.SplitContainer]::new()
-    $scriptView = [System.Windows.Forms.TextBox]::new()
+    $PowerShell = [PowerShell]::Create()
+    $RunSpace = [Runspacefactory]::CreateRunspace()
+    $RunSpace.Open()
 
-    Initialize-SplitContainer1 -SplitContainer1 $splitContainer1 `
-        -SplitContainer2 $splitContainer2 -ScriptView $scriptView
+    $PowerShell.Runspace = $RunSpace
 
-    Initialize-SplitContainer2 -SplitContainer2 $splitContainer2 `
-        -TreeView $treeView -DataGridView $dataGridView
+    $null = $PowerShell.AddScript(
+        {
+            param (
+                $InputObject,
+                $File,
+                $OriginalStartLineNumber,
+                $OriginalEndLineNumber,
+                $OriginalStartOffset,
+                $FontSize,
+                $ExtentDetailLevel,
+                $ModuleFunctionsPublicPath
+            )
 
-    Initialize-DataGridView -DataGridView $dataGridView -Font $font
+            (Get-ChildItem -Path "$ModuleFunctionsPublicPath\..\Private\*.ps1").foreach{
+                . $_.FullName
+            }
 
-    Initialize-ScriptView -Ast $ast -ScriptView $scriptView $TreeView $treeView `
-        -Font $font -ExtentDetailLevel $ExtentDetailLevel `
-        -OriginalStartLineNumber $ast.Extent.StartLineNumber `
-        -OriginalEndLineNumber $ast.Extent.EndLineNumber
+            $ast = Get-Ast -InputObject $InputObject
 
-    Initialize-TreeView `
-        -Ast $ast `
-        -TreeView $treeView `
-        -DataGridView $dataGridView `
-        -ScriptView $scriptView `
-        -Font $font `
-        -ExtentDetailLevel $ExtentDetailLevel `
-        -BufferIsDirty $script:BufferIsDirty `
-        -OriginalStartLineNumber $ast.Extent.StartLineNumber `
-        -OriginalStartOffset $ast.Extent.StartOffset
+            [int]$script:inputObjectStartOffset = $ast.Extent.StartOffset
+            [int]$script:inputObjectOriginalStartOffset = $OriginalStartOffset
+            [int]$script:inputObjectOriginalStartLineNumber = $OriginalStartLineNumber
+            [int]$script:inputObjectStartLineNumber = $ast.Extent.StartLineNumber
+            [int]$script:inputObjectOriginalEndLineNumber = $OriginalEndLineNumber
+            [int]$script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
+            $script:BufferIsDirty = $true
+            $script:TextBoxRefreshed = $false
 
-    try {
-        Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -File $ast.Extent.File
+            $font = [System.Drawing.Font]::new('Consolas', $FontSize)
+            $form = [Windows.Forms.Form]::new()
+            $splitContainer1 = [System.Windows.Forms.SplitContainer]::new()
+            $dataGridView = [Windows.Forms.DataGridView]::new()
+            $treeView = [System.Windows.Forms.TreeView]::new()
+            $splitContainer2 = [System.Windows.Forms.SplitContainer]::new()
+            $scriptView = [System.Windows.Forms.TextBox]::new()
 
-        $form.ShowDialog() | Out-Null
+            Initialize-SplitContainer1 -SplitContainer1 $splitContainer1 `
+                -SplitContainer2 $splitContainer2 -ScriptView $scriptView
+
+            Initialize-SplitContainer2 -SplitContainer2 $splitContainer2 `
+                -TreeView $treeView -DataGridView $dataGridView
+
+            Initialize-DataGridView -DataGridView $dataGridView -Font $font
+
+            Initialize-ScriptView -Ast $ast -ScriptView $scriptView $TreeView $treeView `
+                -Font $font -ExtentDetailLevel $ExtentDetailLevel `
+                -OriginalStartLineNumber $OriginalStartLineNumber `
+                -OriginalEndLineNumber $OriginalEndLineNumber
+
+            Initialize-TreeView `
+                -Ast $ast `
+                -TreeView $treeView `
+                -DataGridView $dataGridView `
+                -ScriptView $scriptView `
+                -Font $font `
+                -ExtentDetailLevel $ExtentDetailLevel `
+                -BufferIsDirty $script:BufferIsDirty `
+                -OriginalStartLineNumber $OriginalStartLineNumber `
+                -OriginalStartOffset $OriginalStartOffset
+
+            $script:BufferIsDirty = $false
+
+            try {
+                Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -File "$File"
+
+                $form.ShowDialog() | Out-Null
+            }
+            catch {
+                throw
+            }
+            finally {
+                $form.Dispose()
+            }
+
+        }
+    ).AddParameters($paramList)
+
+    $null = Register-ObjectEvent -InputObject $PowerShell -EventName InvocationStateChanged -Action {
+        param([System.Management.Automation.PowerShell] $ps)
+
+        $state = $EventArgs.InvocationStateInfo.State
+        $reason = $EventArgs.InvocationStateInfo.Reason
+
+        if ($state -in 'Completed', 'Failed') {
+            if ($state -eq 'Failed') {
+                Write-Host "Failed: $reason"
+            }
+
+            $ps.Runspace.Dispose()
+
+            $EventSubscriber | Unregister-Event -Force
+        }
     }
-    finally {
-        $form.Dispose()
-    }
+
+    $asyncResult = $PowerShell.BeginInvoke()
 }
