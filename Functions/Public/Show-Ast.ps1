@@ -70,10 +70,13 @@ function Show-Ast {
     param (
         [Parameter()]
         [object] $InputObject,
-        [double] $FontSize = $showPsAstConfig.FontSize,
+        [double] $FontSize,
         [ValidateSet('Normal', 'Detailed')]
-        [string] $ExtentDetailLevel = $showPsAstConfig.ExtentDetailLevel
+        [string] $ExtentDetailLevel
     )
+
+    $showPsAstConfig = Get-ShowPsAstConfig -FontSize $FontSize `
+        -ExtentDetailLevel $ExtentDetailLevel
 
     $ast = Get-Ast -InputObject $InputObject
 
@@ -83,8 +86,8 @@ function Show-Ast {
         $ast.Extent.StartLineNumber,
         $ast.Extent.EndLineNumber,
         $ast.Extent.StartOffset,
-        $FontSize,
-        $ExtentDetailLevel,
+        $showPsAstConfig.FontSize,
+        $showPsAstConfig.ExtentDetailLevel,
         (Split-Path -Path (Get-PSCallStack)[0].ScriptName -Parent)
     )
 

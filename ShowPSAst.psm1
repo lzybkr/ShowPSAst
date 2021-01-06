@@ -18,6 +18,4 @@ Foreach ($import in @($public + $private)) {
     }
 }
 
-$showPsAstConfig = Get-ShowPsAstConfig
-
 Export-ModuleMember -Function $public.Basename
