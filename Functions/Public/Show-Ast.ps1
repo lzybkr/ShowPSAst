@@ -80,16 +80,12 @@ function Show-Ast {
 
     $ast = Get-Ast -InputObject $InputObject
 
-    $paramList = @(
-        $ast.Extent.Text,
-        $ast.Extent.File,
-        $ast.Extent.StartLineNumber,
-        $ast.Extent.EndLineNumber,
-        $ast.Extent.StartOffset,
-        $showPsAstConfig.FontSize,
-        $showPsAstConfig.ExtentDetailLevel,
-        (Split-Path -Path (Get-PSCallStack)[0].ScriptName -Parent)
-    )
+    $paramList = @{
+        Ast                       = $ast
+        FontSize                  = $showPsAstConfig.FontSize
+        ExtentDetailLevel         = $showPsAstConfig.ExtentDetailLevel
+        ModuleFunctionsPublicPath = (Split-Path -Path (Get-PSCallStack)[0].ScriptName -Parent)
+    }
 
     $PowerShell = [PowerShell]::Create()
     $RunSpace = [Runspacefactory]::CreateRunspace()
@@ -100,11 +96,7 @@ function Show-Ast {
     $null = $PowerShell.AddScript(
         {
             param (
-                $InputObject,
-                $File,
-                $OriginalStartLineNumber,
-                $OriginalEndLineNumber,
-                $OriginalStartOffset,
+                $Ast,
                 $FontSize,
                 $ExtentDetailLevel,
                 $ModuleFunctionsPublicPath
@@ -114,15 +106,13 @@ function Show-Ast {
                 . $_.FullName
             }
 
-            $ast = Get-Ast -InputObject $InputObject
-
-            [int]$script:inputObjectStartOffset = $ast.Extent.StartOffset
-            [int]$script:inputObjectOriginalStartOffset = $OriginalStartOffset
-            [int]$script:inputObjectOriginalStartLineNumber = $OriginalStartLineNumber
-            [int]$script:inputObjectStartLineNumber = $ast.Extent.StartLineNumber
-            [int]$script:inputObjectOriginalEndLineNumber = $OriginalEndLineNumber
-            [int]$script:inputObjectEndLineNumber = $ast.Extent.EndLineNumber
-            $script:BufferIsDirty = $true
+            [int]$script:inputObjectStartOffset = $Ast.Extent.StartOffset
+            [int]$script:inputObjectOriginalStartOffset = $Ast.Extent.StartOffset
+            [int]$script:inputObjectOriginalStartLineNumber = $Ast.Extent.StartLineNumber
+            [int]$script:inputObjectStartLineNumber = $Ast.Extent.StartLineNumber
+            [int]$script:inputObjectOriginalEndLineNumber = $Ast.Extent.EndLineNumber
+            [int]$script:inputObjectEndLineNumber = $Ast.Extent.EndLineNumber
+            $script:BufferIsDirty = $false
             $script:TextBoxRefreshed = $false
 
             $font = [System.Drawing.Font]::new('Consolas', $FontSize)
@@ -143,8 +133,8 @@ function Show-Ast {
 
             Initialize-ScriptView -Ast $ast -ScriptView $scriptView $TreeView $treeView `
                 -Font $font -ExtentDetailLevel $ExtentDetailLevel `
-                -OriginalStartLineNumber $OriginalStartLineNumber `
-                -OriginalEndLineNumber $OriginalEndLineNumber
+                -OriginalStartLineNumber $Ast.Extent.StartLineNumber `
+                -OriginalEndLineNumber $Ast.Extent.EndLineNumber
 
             Initialize-TreeView `
                 -Ast $ast `
@@ -154,13 +144,13 @@ function Show-Ast {
                 -Font $font `
                 -ExtentDetailLevel $ExtentDetailLevel `
                 -BufferIsDirty $script:BufferIsDirty `
-                -OriginalStartLineNumber $OriginalStartLineNumber `
-                -OriginalStartOffset $OriginalStartOffset
+                -OriginalStartLineNumber $Ast.Extent.StartLineNumber `
+                -OriginalStartOffset $Ast.Extent.StartOffset
 
             $script:BufferIsDirty = $false
 
             try {
-                Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -File "$File"
+                Initialize-Form -Form $form -SplitContainer1 $splitContainer1 -File "$($Ast.Extent.File)"
 
                 $form.ShowDialog() | Out-Null
             }
