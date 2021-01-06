@@ -13,6 +13,6 @@
             Tags       = @('Ast')
             LicenseUri = 'https://github.com/lzybkr/ShowPSAst/blob/master/LICENSE.txt'
             ProjectUri = 'https://github.com/lzybkr/ShowPSAst'
-        }
+        } 
     }
 }
