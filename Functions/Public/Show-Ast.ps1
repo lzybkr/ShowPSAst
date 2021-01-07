@@ -13,6 +13,8 @@ display the corresponding text in the script and the properties of the node.
 If you edit the text in the script view, you can press F5 to refresh the
 tree view.
 
+In the script view, pressing F3 will find the line in the tree view.
+
 There are default values for FontSize and ExtentDetailLevel. The defaults can be
 overridden.
 
@@ -29,7 +31,6 @@ FontSize = 12
 # Normal   = line numbers only
 # Detailed = line numbers, column numbers and offset numbers
 ExtentDetailLevel = Normal
-
 
 .PARAMETER InputObject
 Either a scriptblock or a path to a file.

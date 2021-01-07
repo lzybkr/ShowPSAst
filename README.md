@@ -20,6 +20,34 @@ Show-Ast ~\Documents\WindowsPowerShell\profile.ps1
 
 # Show the ast of a script block
 Show-Ast { echo -InputObject "Name is $name" }
+
+# Get help
+Get-Help Show-Ast
 ```
 
-If you edit the text in the script view, you can press F5 to refresh the tree view.
+If you edit the text in the script view, you can press F5 to refresh the
+tree view.
+
+In the script view, pressing F3 will find the current line in the tree view.
+This does not work for commented out lines.
+
+There are default values for FontSize and ExtentDetailLevel. The defaults can be
+overridden.
+
+Command line, one time override:
+
+`Show-Ast 'c:\Data\PowerShell\sample.ps1' -FontSize 10 -ExtentDetailLevel Detailed`
+
+Configuration file, permanent override:
+
+A file named `config.txt` in the root of the module. The contents should look like
+this:
+
+```
+FontSize = 12
+
+# Valid values are:
+# Normal   = line numbers only
+# Detailed = line numbers, column numbers and offset numbers
+ExtentDetailLevel = Normal
+```
