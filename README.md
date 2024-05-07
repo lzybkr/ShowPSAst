@@ -3,6 +3,8 @@ Show-Ast
 
 This module helps visualize the PowerShell Ast with a graphical view.
 
+Note: Because this module is [WinForms](https://learn.microsoft.com/en-us/dotnet/desktop/winforms)-based, it only works on Windows.
+
 The Ast is fully expanded in tree view, selecting a node in the tree
 view will display the corresponding text in the script and the properties
 of the node.
